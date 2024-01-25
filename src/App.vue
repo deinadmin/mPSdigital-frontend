@@ -27,6 +27,10 @@
           <i class="el-icon-s-order"></i>
           <span>Anträge</span>
         </el-menu-item>
+        <el-menu-item route="/pinwall" index="pinwall">
+          <i class="el-icon-coordinate"></i>
+          <span>Pinnwand</span>
+        </el-menu-item>
         <el-button @click="logOut" icon="el-icon-caret-left" style="border-radius: 0; width: 100%; bottom: 0; position: absolute" type="danger">Logout</el-button>
       </el-menu>
     </nav>
