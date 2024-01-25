@@ -1,28 +1,94 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div style="padding: 0; margin: 0">
+    <nav v-if="loaded && loggedIn">
+      <el-menu
+
+          router
+          style="height: 100%; position: relative"
+          :default-active="this.$router.currentRoute.name">
+        <el-menu-item index="account">
+          <i class="el-icon-user"></i>
+          <span>{{ username }}</span>
+        </el-menu-item>
+        <hr style="margin: 0; padding: 0;">
+        <el-menu-item route="/" index="home">
+          <i class="el-icon-s-home"></i>
+          <span>Home</span>
+        </el-menu-item>
+        <el-menu-item route="/users" index="users">
+          <i class="el-icon-set-up"></i>
+          <span>Benutzerverwaltung</span>
+        </el-menu-item>
+        <el-menu-item route="/groups" index="groups">
+          <i class="el-icon-user-solid"></i>
+          <span>Gruppen</span>
+        </el-menu-item>
+        <el-menu-item route="/requests" index="requests">
+          <i class="el-icon-s-order"></i>
+          <span>Anträge</span>
+        </el-menu-item>
+        <el-button @click="logOut" icon="el-icon-caret-left" style="border-radius: 0; width: 100%; bottom: 0; position: absolute" type="danger">Logout</el-button>
+      </el-menu>
+    </nav>
+    <div id="app">
+      <router-view @logOut="logOut()" v-if="loggedIn"/>
+    </div>
+    <LoginView @logIn="logIn($event)" v-if="!loggedIn" />
   </div>
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
-
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
-</script>
-
 <style>
-#app {
+* {
+  user-select: none;
+}
+body {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  padding: 0;
+  margin: 0;
 }
+#app {
+  margin-left: 320px;
+}
+nav {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 300px;
+  height: 100vh;
+}
+
+
 </style>
+<script>
+
+import LoginView from "@/views/LoginView.vue";
+
+export default {
+  name: 'App',
+  components: {LoginView},
+  data() {
+    return {
+      loaded: false,
+      loggedIn: false,
+      username: ""
+    }
+  },
+  created() {
+    this.loaded=true
+  },
+  methods: {
+    logOut() {
+      this.loggedIn = false
+    },
+    logIn(event) {
+      console.log(event)
+      this.username = event.email
+      this.loggedIn = true
+    }
+  }
+}
+
+</script>
