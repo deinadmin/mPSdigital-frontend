@@ -69,7 +69,6 @@
 export default {
   name: 'RequestsView',
   created() {
-    this.$router.s
   },
   data() {
     return {
