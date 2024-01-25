@@ -24,8 +24,11 @@ export default {
     return {
       email: "",
       password: "",
-      loading: false
+      loading: false,
+      verified: false
     }
+  },
+  created() {
   },
   methods: {
     logIn() {
