@@ -39,6 +39,8 @@
     </div>
     <LoginView ref="loginView" @logIn="logIn($event)" v-if="!loggedIn" />
     <el-button type="warning" v-if="!loggedIn" @click="loggedIn = true" style="position: fixed; left: 10px; bottom: 10px">Set state "loggedIn" to true</el-button>
+    <el-button type="primary" v-if="loggedIn" @click="getRequest" style="position: fixed; right: 10px; bottom: 10px">GET request to "/"</el-button>
+
   </div>
 </template>
 
@@ -89,6 +91,28 @@ export default {
     logOut() {
       this.loggedIn = false
     },
+    async getRequest() {
+      try {
+        const response = await axios.get('http://172.29.1.231:3001/');
+
+        if (response.status === 200) {
+          this.$message.success("Du bist eingeloggt!");
+
+          this.loggedIn = true
+          const sessionCookie = response.headers['Set-Cookie'];
+          console.log("Session Cookie: ", sessionCookie);
+
+
+        }
+
+      } catch (error) {
+        if (error.response.status === 401) {
+          this.$message.error("Fehler.");
+        } else {
+          console.log("An error occurred: ", error.message);
+        }
+      }
+    },
     async logIn(event) {
 
       try {
@@ -100,11 +124,12 @@ export default {
         if (response.status === 200) {
           this.$message.success("Du wurdest eingeloggt!");
 
+          console.log(response)
+
           this.loggedIn = true
-          /*const sessionCookie = response.headers['set-cookie'];
+          const sessionCookie = response.headers['set-cookie'];
           console.log("Session Cookie: ", sessionCookie);
 
-          return sessionCookie;*/
         }
 
       } catch (error) {
