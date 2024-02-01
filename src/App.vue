@@ -37,7 +37,8 @@
     <div id="app">
       <router-view @logOut="logOut()" v-if="loggedIn"/>
     </div>
-    <LoginView @logIn="logIn($event)" v-if="!loggedIn" />
+    <LoginView ref="loginView" @logIn="logIn($event)" v-if="!loggedIn" />
+    <el-button type="warning" v-if="!loggedIn" @click="loggedIn = true" style="position: fixed; left: 10px; bottom: 10px">Set state "loggedIn" to true</el-button>
   </div>
 </template>
 
@@ -68,6 +69,7 @@ nav {
 </style>
 <script>
 
+import axios from "axios";
 import LoginView from "@/views/LoginView.vue";
 
 export default {
@@ -87,10 +89,32 @@ export default {
     logOut() {
       this.loggedIn = false
     },
-    logIn(event) {
-      console.log(event)
-      this.username = event.email
-      this.loggedIn = true
+    async logIn(event) {
+
+      try {
+        const response = await axios.post('http://172.29.1.231:3001/login/', {
+          username: event.username,
+          password: event.password
+        });
+
+        if (response.status === 200) {
+          this.$message.success("Du wurdest eingeloggt!");
+
+          this.loggedIn = true
+          /*const sessionCookie = response.headers['set-cookie'];
+          console.log("Session Cookie: ", sessionCookie);
+
+          return sessionCookie;*/
+        }
+
+      } catch (error) {
+        if (error.response.status === 401) {
+          this.$message.error("Die Kombination aus Benutzername und Passwort existiert nicht.");
+          this.$refs.loginView.resetForm()
+        } else {
+          console.log("An error occurred: ", error.message);
+        }
+      }
     }
   }
 }

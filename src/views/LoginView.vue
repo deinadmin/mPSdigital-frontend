@@ -25,7 +25,8 @@ export default {
       email: "",
       password: "",
       loading: false,
-      verified: false
+      verified: false,
+      ip: "http://172.29.1.231:3001/"
     }
   },
   created() {
@@ -44,9 +45,13 @@ export default {
         showClose: false,
         message: 'Du wirst eingeloggt...'
       });
-      setTimeout(function() {
-        that.$emit('logIn', { email: that.email, password: that.password })
-      }, 3000);
+      setTimeout(() => {
+        that.$emit('logIn', { username: that.email, password: that.password })
+      }, 1000)
+    },
+    resetForm() {
+      this.loading = false
+      this.password = ""
     }
   }
 }
