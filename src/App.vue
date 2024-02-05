@@ -93,7 +93,7 @@ export default {
     },
     async getRequest() {
       try {
-        const response = await axios.get('http://172.29.1.231:3001/');
+        const response = await axios.get('http://172.29.1.231:3001/', {withCredentials: true});
 
         if (response.status === 200) {
           this.$message.success("Du bist eingeloggt!");
@@ -119,7 +119,7 @@ export default {
         const response = await axios.post('http://172.29.1.231:3001/login/', {
           username: event.username,
           password: event.password
-        });
+        }, {withCredentials: true});
 
         if (response.status === 200) {
           this.$message.success("Du wurdest eingeloggt!");
