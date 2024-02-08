@@ -30,6 +30,12 @@ export default {
     }
   },
   created() {
+    let that = this
+    document.addEventListener("keydown", (e) => {
+      if(e.keyCode === 13) {
+        that.logIn()
+      }
+    })
   },
   methods: {
     logIn() {
@@ -41,13 +47,7 @@ export default {
 
       this.loading = true;
       let that = this
-      this.$message({
-        showClose: false,
-        message: 'Du wirst eingeloggt...'
-      });
-      setTimeout(() => {
-        that.$emit('logIn', { username: that.email, password: that.password })
-      }, 1000)
+      that.$emit('logIn', { username: that.email, password: that.password })
     },
     resetForm() {
       this.loading = false
