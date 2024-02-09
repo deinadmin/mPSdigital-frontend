@@ -40,6 +40,11 @@ const routes = [
     path: '/pinwall',
     name: 'pinwall',
     component: () => import('../views/PinWallView.vue')
+  },
+  {
+    path: '/users/:username',
+    name: 'user',
+    component: () => import('../views/UserView.vue')
   }
 ]
 

@@ -14,21 +14,29 @@
           <i class="el-icon-s-home"></i>
           <span>Home</span>
         </el-menu-item>
-        <el-menu-item route="/users" index="users">
+        <el-menu-item v-if="user.role === 'teacher' || user.role === 'admin'" route="/users" index="users">
           <i class="el-icon-set-up"></i>
           <span>Benutzerverwaltung</span>
         </el-menu-item>
-        <el-menu-item route="/groups" index="groups">
+        <el-menu-item v-if="user.role === 'teacher' || user.role === 'admin'" route="/groups" index="groups">
           <i class="el-icon-user-solid"></i>
           <span>Gruppen</span>
         </el-menu-item>
-        <el-menu-item route="/requests" index="requests">
+        <el-menu-item v-else route="/my-group" index="my-group">
+          <i class="el-icon-user-solid"></i>
+          <span>Meine Gruppe</span>
+        </el-menu-item>
+        <el-menu-item v-if="user.role === 'teacher' || user.role === 'admin'" route="/requests" index="requests">
           <i class="el-icon-s-order"></i>
           <span>Anträge</span>
         </el-menu-item>
-        <el-menu-item route="/pinwall" index="pinwall">
+        <el-menu-item v-else route="/my-requests" index="my-requests">
+          <i class="el-icon-s-order"></i>
+          <span>Meine Anträge</span>
+        </el-menu-item>
+        <el-menu-item v-if="user.role === 'student'" route="/pinwall" index="pinwall">
           <i class="el-icon-coordinate"></i>
-          <span>Pinnwand</span>
+          <span>Meine Pinnwand</span>
         </el-menu-item>
         <el-button @click="logOut" icon="el-icon-caret-left" style="border-radius: 0; width: 100%; bottom: 0; position: absolute" type="danger">Logout</el-button>
       </el-menu>

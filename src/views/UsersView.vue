@@ -10,6 +10,7 @@
         :data="users"
         stripe
         border
+        @row-click="goToUser"
         style="width: 100%">
       <el-table-column
           prop="username"
@@ -76,6 +77,9 @@ export default {
     ip: String
   },
   methods: {
+    goToUser(event) {
+      this.$router.push("/users/" + event.username)
+    },
     async loadUsers() {
       try {
         const response = await axios.get("http://localhost:3001/users/", {withCredentials: true});
@@ -117,7 +121,7 @@ export default {
             duration: 1000,
             showClose: false
           });
-          this.loadUsers()
+          await this.loadUsers()
           this.loading = false
           this.showCreateUserDialog = false
 
