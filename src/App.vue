@@ -65,7 +65,6 @@
       <el-input v-model="newPassword" placeholder="Passwort" type="password" show-password></el-input>
       <el-input v-model="newPasswordRepeat"  style="margin-top: 10px" placeholder="Passwort wiederholen" type="password" show-password></el-input>
       <span slot="footer" class="dialog-footer">
-    <el-button @click="() => {showDefaultPasswordChangeDialog = false; this.$notify({title: 'Warnung!', message: 'Es wird dringend empfohlen, das Standard-Passwort in ein sicheres zu ändern.', type: 'warning'})}">Später</el-button>
     <el-button :loading="defaultPasswordChangeLoading" type="primary" @click="updatePassword">Passwort sichern</el-button>
   </span>
     </el-dialog>
