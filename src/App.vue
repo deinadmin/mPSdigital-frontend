@@ -6,44 +6,45 @@
           style="height: 100%; position: relative"
           :default-active="this.$router.currentRoute.name">
         <el-menu-item index="account">
-          <i class="el-icon-user"></i>
+          <i class="menu-icon fa-solid fa-user"></i>
           <span>{{ user.username }}</span>
         </el-menu-item>
         <hr style="margin: 0; padding: 0;">
         <el-menu-item route="/" index="home">
-          <i class="el-icon-s-home"></i>
+          <i class="menu-icon fa-solid fa-house"></i>
           <span>Home</span>
         </el-menu-item>
         <el-menu-item v-if="user.role === 'teacher' || user.role === 'admin'" route="/users" index="users">
-          <i class="el-icon-set-up"></i>
+          <i class="menu-icon fa-solid fa-head-side-gear"></i>
           <span>Benutzerverwaltung</span>
         </el-menu-item>
         <el-menu-item v-if="user.role === 'teacher' || user.role === 'admin'" route="/groups" index="groups">
-          <i class="el-icon-user-solid"></i>
+          <i class="menu-icon fa-solid fa-people-group"></i>
           <span>Gruppen</span>
         </el-menu-item>
         <el-menu-item v-else route="/my-group" index="my-group">
-          <i class="el-icon-user-solid"></i>
+          <i class="menu-icon fa-solid fa-people-group"></i>
           <span>Meine Gruppe</span>
         </el-menu-item>
         <el-menu-item v-if="user.role === 'teacher' || user.role === 'admin'" route="/requests" index="requests">
-          <i class="el-icon-s-order"></i>
+          <i class="menu-icon fa-solid fa-message-exclamation"></i>
           <span>Anträge</span>
         </el-menu-item>
         <el-menu-item v-else route="/my-requests" index="my-requests">
-          <i class="el-icon-s-order"></i>
+          <i class="menu-icon fa-solid fa-message-exclamation"></i>
           <span>Meine Anträge</span>
         </el-menu-item>
         <el-menu-item v-if="user.role === 'student'" route="/pinwall" index="pinwall">
-          <i class="el-icon-coordinate"></i>
+          <i class="menu-icon fa-solid fa-map-pin"></i>
           <span>Meine Pinnwand</span>
         </el-menu-item>
-        <el-button @click="logOut" icon="el-icon-caret-left" style="border-radius: 0; width: 100%; bottom: 0; position: absolute" type="danger">Logout</el-button>
+        <el-button @click="logOut" style="border-radius: 0; width: 100%; bottom: 0; position: absolute" type="danger">Logout<i style="margin-left: 8px" class="fa-solid fa-arrow-right-from-bracket"></i></el-button>
       </el-menu>
     </nav>
     <div id="app">
       <router-view ip="ip" @logOut="logOut()" v-if="loggedIn && loaded"/>
     </div>
+    <OnboardingComponent v-if="loaded && loggedIn" :user="user" @closeOnboarding="closeOnboarding" :show-onboarding="showOnboarding" />
     <LoginView ref="loginView" @logIn="logIn($event)" v-if="!loggedIn && loaded" />
     <!-- <el-button type="warning" v-if="!loggedIn" @click="loggedIn = true" style="position: fixed; left: 10px; bottom: 10px">Set state "loggedIn" to true</el-button> -->
     <el-button type="primary" v-if="loggedIn" @click="getRequest" style="position: fixed; right: 10px; bottom: 10px">GET request to "/"</el-button>
@@ -53,21 +54,6 @@
          element-loading-background="rgba(0, 0, 0, 0.8)">
 
     </div>
-    <el-dialog
-        :close-on-click-modal="false"
-        :show-close="false"
-        title="Wichtig!"
-        :close-on-press-escape="false"
-        :visible.sync="showDefaultPasswordChangeDialog"
-        width="30%">
-      <el-alert :closable="false" type="warning">Warnung: Dein Account hat momentan ein unsicheres Standard-Passwort!</el-alert>
-      <p>Bitte ändere dein Standard-Passwort zu einem sicheren Passwort:</p>
-      <el-input v-model="newPassword" placeholder="Passwort" type="password" show-password></el-input>
-      <el-input v-model="newPasswordRepeat"  style="margin-top: 10px" placeholder="Passwort wiederholen" type="password" show-password></el-input>
-      <span slot="footer" class="dialog-footer">
-    <el-button :loading="defaultPasswordChangeLoading" type="primary" @click="updatePassword">Passwort sichern</el-button>
-  </span>
-    </el-dialog>
 
   </div>
 </template>
@@ -94,7 +80,9 @@ nav {
   width: 300px;
   height: 100vh;
 }
-
+.menu-icon {
+  margin-right: 10px;
+}
 
 </style>
 <script>
@@ -102,23 +90,23 @@ nav {
 import axios from "axios";
 axios.defaults.withCredentials = true
 import LoginView from "@/views/LoginView.vue";
+import OnboardingComponent from "@/components/OnboardingComponent.vue";
 
 export default {
   name: 'App',
-  components: {LoginView},
+  components: {OnboardingComponent, LoginView},
   data() {
     return {
       loaded: false,
       loggedIn: false,
       ip: "http://localhost:3001/",
-      showDefaultPasswordChangeDialog: false,
-      newPassword: "",
-      newPasswordRepeat: "",
       user: {
         username: "",
-        role: ""
+        role: "",
+        hasGroup: false,
+        changedPassword: false
       },
-      defaultPasswordChangeLoading: false
+      showOnboarding: false
     }
   },
   async created() {
@@ -138,12 +126,14 @@ export default {
             duration: 1000,
             showClose: false
           });
+          if(response.data.hasGroup === false && response.data.role === "student") this.showOnboarding = true
 
-          this.loaded=true
 
           this.loggedIn = true
           this.user=response.data
           console.log(this.user)
+          this.loaded=true
+
         }
 
       } catch (error) {
@@ -167,7 +157,7 @@ export default {
         this.defaultPasswordChangeLoading = false
         return
       }
-      if(!(/^(?=.*[!@#$%^&*])(?=.{8,})/.test(this.newPassword))) {
+      if(!(/^(?=.*[!@#$%^&*?])(?=.{8,})/.test(this.newPassword))) {
         this.$message.error("Dein Passwort sollte mindestens 8 Zeichen lang sein und ein Sonderzeichen enthalten!")
         this.defaultPasswordChangeLoading = false
         return
@@ -240,6 +230,9 @@ export default {
           console.log("An error occurred: ", error.message);
         }
       }
+    },
+    closeOnboarding() {
+      this.showOnboarding = false
     },
     async logIn(event) {
       if(this.loggedIn) return

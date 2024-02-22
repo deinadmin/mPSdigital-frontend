@@ -23,6 +23,7 @@
       </el-table-column>
       <el-table-column
           label="Datum"
+          sortable
           width="150">
         <template slot-scope="scope">
           <i class="el-icon-time"></i>
@@ -94,7 +95,7 @@ export default {
         status: 'GENEHMIGT',
         group: 'Petersburg entdecken',
         title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-01-03",
+        date: "2023-01-03",
         id: 3
       }, {
         status: 'AUSSTEHEND',
@@ -106,31 +107,31 @@ export default {
         status: 'AUSSTEHEND',
         group: 'Petersburg entdecken',
         title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-01-03",
+        date: "2024-04-03",
         id: 5
       }, {
         status: 'GENEHMIGT',
         group: 'Hotdogs selber herstellen',
         title: 'Ausflug zur Würstchenfabrik in Würzburg',
-        date: "2024-01-03",
+        date: "2024-02-03",
         id: 6
       }, {
         status: 'ABGELEHNT',
         group: 'Petersburg entdecken',
         title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-01-03",
+        date: "2024-05-03",
         id: 1
       }, {
         status: 'GENEHMIGT',
         group: 'Petersburg entdecken',
         title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-01-03",
+        date: "2024-01-07",
         id: 2
       }, {
         status: 'GENEHMIGT',
         group: 'Petersburg entdecken',
         title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-01-03",
+        date: "2024-01-01",
         id: 3
       }, {
         status: 'AUSSTEHEND',
@@ -142,7 +143,7 @@ export default {
         status: 'ABGELEHNT',
         group: 'Petersburg entdecken',
         title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-01-03",
+        date: "2024-01-28",
         id: 1
       }, {
         status: 'GENEHMIGT',
