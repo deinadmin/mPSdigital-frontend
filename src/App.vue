@@ -42,12 +42,11 @@
       </el-menu>
     </nav>
     <div id="app">
-      <router-view ip="ip" @logOut="logOut()" v-if="loggedIn && loaded"/>
+      <router-view :ip="ip" @logOut="logOut()" v-if="loggedIn && loaded"/>
     </div>
-    <OnboardingComponent v-if="loaded && loggedIn" :user="user" @closeOnboarding="closeOnboarding" :show-onboarding="showOnboarding" />
-    <LoginView ref="loginView" @logIn="logIn($event)" v-if="!loggedIn && loaded" />
+    <OnboardingComponent :ip="ip" v-if="loaded && loggedIn" :user="user" @closeOnboarding="closeOnboarding" :show-onboarding="showOnboarding" />
+    <LoginView :ip="ip" ref="loginView" @logIn="logIn($event)" v-if="!loggedIn && loaded" />
     <!-- <el-button type="warning" v-if="!loggedIn" @click="loggedIn = true" style="position: fixed; left: 10px; bottom: 10px">Set state "loggedIn" to true</el-button> -->
-    <el-button type="primary" v-if="loggedIn" @click="getRequest" style="position: fixed; right: 10px; bottom: 10px">GET request to "/"</el-button>
     <div v-if="!loaded" style="position: fixed; left: 0; right: 0; top: 300px" v-loading="!loaded"
          element-loading-text="mPSdigital wird geladen..."
          element-loading-spinner="el-icon-loading"
@@ -116,7 +115,7 @@ export default {
     async getUserInfo() {
 
       try {
-        const response = await axios.get(this.ip, {withCredentials: true});
+        const response = await axios.get(this.ip + "account/", {withCredentials: true});
 
         if (response.status === 200) {
           this.$notify({
@@ -145,42 +144,6 @@ export default {
         }
       }
     },
-    async updatePassword() {
-      this.defaultPasswordChangeLoading = true
-      if(this.newPassword === "" || this.newPasswordRepeat === "") {
-        this.$message.error("Achte darauf, dass alle Felder ausgefüllt sind!")
-        this.defaultPasswordChangeLoading = false
-        return
-      }
-      if(this.newPassword !== this.newPasswordRepeat) {
-        this.$message.error("Die Passwörter stimmen nicht überein!")
-        this.defaultPasswordChangeLoading = false
-        return
-      }
-      if(!(/^(?=.*[!@#$%^&*?])(?=.{8,})/.test(this.newPassword))) {
-        this.$message.error("Dein Passwort sollte mindestens 8 Zeichen lang sein und ein Sonderzeichen enthalten!")
-        this.defaultPasswordChangeLoading = false
-        return
-      }
-
-      try {
-        const response = await axios.post(this.ip + 'changePassword/', {
-          old: this.user.username,
-          new: this.newPassword
-        }, {withCredentials: true});
-
-        if (response.status === 200) {
-          this.$message.success("Dein Passwort wurde erfolgreich geändert!")
-          this.showDefaultPasswordChangeDialog = false
-          this.defaultPasswordChangeLoading = false
-        }
-
-      } catch (error) {
-        this.$message.error("Fehler.");
-      }
-
-
-    },
     async logOut() {
       let that = this
       try {
@@ -196,28 +159,6 @@ export default {
           });
 
           that.loggedIn = false
-
-
-
-        }
-
-      } catch (error) {
-        if (error.response.status === 401) {
-          this.$message.error("Fehler.");
-        } else {
-          console.log("An error occurred: ", error.message);
-        }
-      }
-    },
-    async getRequest() {
-      try {
-        const response = await axios.get(this.ip, {withCredentials: true});
-
-        if (response.status === 200) {
-          this.$message("Du bist eingeloggt!");
-
-          this.loggedIn = true
-          console.log(response.data)
 
 
 

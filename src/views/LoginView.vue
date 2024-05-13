@@ -26,8 +26,10 @@ export default {
       password: "",
       loading: false,
       verified: false,
-      ip: "http://172.29.1.231:3001/"
     }
+  },
+  props: {
+    ip: String
   },
   created() {
     let that = this

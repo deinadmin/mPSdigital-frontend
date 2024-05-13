@@ -32,12 +32,12 @@
       <p style="margin-top: -20px">Gib deiner Gruppe einen Namen:</p>
       <el-input v-model="newGroup.name" placeholder="Iglu bauen am Nordpol"></el-input>
       <p>Ist dein Projekt im Rahmen der mPS-Stunden oder der Herausforderung?</p>
-      <el-select style="width: 100%" v-model="newGroup.projectType" placeholder="mPS / Herausforderung">
+      <el-select style="width: 100%" v-model="newGroup.type" placeholder="mPS / Herausforderung">
         <el-option label="mPS" value="mPS"></el-option>
         <el-option label="Herausforderung" value="Herausforderung"></el-option>
       </el-select>
       <br>
-      <el-button @click="createGroup()" :disabled="newGroup.projectType === '' || newGroup.name === ''" icon="fa-solid fa-plus" style="margin-top: 10px; padding-left: 12px; padding-right: 12px" type="success"> Gruppe erstellen</el-button>
+      <el-button @click="createGroup()" :disabled="newGroup.type === '' || newGroup.name === ''" icon="fa-solid fa-plus" style="margin-top: 10px; padding-left: 12px; padding-right: 12px" type="success"> Gruppe erstellen</el-button>
     </el-dialog>
     <el-dialog top="30vh" width="40%" append-to-body title="Gruppe beitreten" :visible.sync="showJoinGroup">
       <p style="margin-top: -20px">Suche nach dem Namen deiner Gruppe:</p>
@@ -74,7 +74,7 @@ export default {
       showJoinGroup: false,
       newGroup: {
         name: "",
-        projectType: ""
+        type: ""
       },
       groupSearch: "",
       groups: [],
@@ -87,7 +87,8 @@ export default {
   },
   props: {
     showOnboarding: Boolean,
-    user: Object
+    user: Object,
+    ip: String
   },
   created() {
     if(this.user.changedPassword === true) this.step = 1
@@ -115,7 +116,7 @@ export default {
       }
 
       try {
-        const response = await axios.post('http://localhost:3001/changePassword/', {
+        const response = await axios.post(this.ip + 'account/changePassword/', {
           old: this.user.username,
           new: this.newPassword
         }, {withCredentials: true});
@@ -140,13 +141,20 @@ export default {
       this.showCreateGroup = true
     },
     async createGroup() {
-      if(this.newGroup.projectType === '' || this.newGroup.name === '') {
+      if(this.newGroup.type === '' || this.newGroup.name === '') {
         this.$message.error("Bitte achte darauf, dass beide Felder ausgefüllt sind.")
         return
       }
 
+      this.newGroup = {
+        name: this.newGroup.name,
+        type: this.newGroup.type,
+        startDate: Date()
+      }
+
+
       try {
-        const response = await axios.post("http://localhost:3001/createGroup", this.newGroup, {withCredentials: true});
+        const response = await axios.post(this.ip + "group/", this.newGroup, {withCredentials: true});
 
         if(response.status === 201) {
           this.$notify({
@@ -173,10 +181,7 @@ export default {
     async joinGroup() {
       if(this.selectedGroup === null) return
       try {
-        const response = await axios.put("http://localhost:3001/joinGroup", {
-          username: this.user.username,
-          group: this.selectedGroup.id
-        }, {withCredentials: true});
+        const response = await axios.put(this.ip + "group/" + this.selectedGroup.id + "/" + this.user.username, {}, {withCredentials: true});
 
         if (response.status === 200) {
           this.$notify({
@@ -203,7 +208,7 @@ export default {
     async goToJoinGroup() {
       this.showJoinGroup = true
       try {
-        const response = await axios.get("http://localhost:3001/group", {withCredentials: true});
+        const response = await axios.get(this.ip + "groups", {withCredentials: true});
 
         if (response.status === 200) {
           this.$notify({

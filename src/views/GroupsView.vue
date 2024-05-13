@@ -48,9 +48,12 @@ export default {
       groups: []
     }
   },
+  props: {
+    ip: String
+  },
   async created() {
     try {
-      const response = await axios.get("http://localhost:3001/group", {withCredentials: true});
+      const response = await axios.get(this.ip + "groups/", {withCredentials: true});
 
       if (response.status === 200) {
 

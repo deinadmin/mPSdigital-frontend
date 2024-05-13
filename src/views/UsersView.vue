@@ -82,6 +82,7 @@ export default {
     },
     async loadUsers() {
       try {
+
         const response = await axios.get("http://localhost:3001/users/", {withCredentials: true});
 
         if (response.status === 200) {
@@ -108,8 +109,7 @@ export default {
       }
       console.log(this.createUserForm)
       try {
-        const response = await axios.post('http://localhost:3001/createUser/', {
-          username: this.createUserForm.username,
+        const response = await axios.post(this.ip + 'user/' + this.createUserForm.username, {
           role: this.createUserForm.role
         }, {withCredentials: true});
         console.log(response)
@@ -125,14 +125,23 @@ export default {
           this.loading = false
           this.showCreateUserDialog = false
 
+          this.createUserForm = {
+            username: "",
+            role: ""
+          }
 
-        } else {
+
+        }else {
           this.$message.error("Ups! Da ist wohl etwas schief gelaufen...")
         }
 
       } catch (error) {
         if(error.response.status === 403) {
           this.$message.error("Du hast nicht die Berechtigung dies zu tun!")
+          this.loading = false
+        }
+        if(error.response.status === 409) {
+          this.$message.error('Es existiert bereits ein Benutzer mit dem Namen "' + this.createUserForm.username + '"!')
           this.loading = false
         }
         if (error.response.status === 401) {
