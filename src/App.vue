@@ -42,7 +42,7 @@
       </el-menu>
     </nav>
     <div id="app">
-      <router-view :ip="ip" @logOut="logOut()" v-if="loggedIn && loaded"/>
+      <router-view :user="user" :ip="ip" @logOut="logOut()" v-if="loggedIn && loaded"/>
     </div>
     <OnboardingComponent :ip="ip" v-if="loaded && loggedIn" :user="user" @closeOnboarding="closeOnboarding" :show-onboarding="showOnboarding" />
     <LoginView :ip="ip" ref="loginView" @logIn="logIn($event)" v-if="!loggedIn && loaded" />
@@ -125,8 +125,8 @@ export default {
             duration: 1000,
             showClose: false
           });
-          if(response.data.hasGroup === false && response.data.role === "student") this.showOnboarding = true
-
+          if(response.data.group === null && response.data.role === "student") this.showOnboarding = true
+          if(response.data.changedPassword === false && response.data.role === "student") this.showOnboarding = true
 
           this.loggedIn = true
           this.user=response.data
