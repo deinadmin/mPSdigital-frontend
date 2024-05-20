@@ -125,7 +125,10 @@ export default {
           this.$message.success("Dein Passwort wurde erfolgreich geändert!")
           this.step=1;
           this.defaultPasswordChangeLoading = false
-          if(this.user.group !== null) this.step=3
+          console.log(typeof this.user.group)
+          if(typeof this.user.group !== "undefined") {
+            this.step=3
+          }
         }
 
       } catch (error) {

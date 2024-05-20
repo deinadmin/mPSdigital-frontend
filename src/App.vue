@@ -125,7 +125,7 @@ export default {
             duration: 1000,
             showClose: false
           });
-          if(response.data.group === null && response.data.role === "student") this.showOnboarding = true
+          if(typeof response.data.group === "undefined" && response.data.role === "student") this.showOnboarding = true
           if(response.data.changedPassword === false && response.data.role === "student") this.showOnboarding = true
 
           this.loggedIn = true
