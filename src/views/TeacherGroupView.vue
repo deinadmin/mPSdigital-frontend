@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="left-indent-view">
     <div v-if="loaded">
       <h1>Gruppen » <i>{{ group.name }}</i></h1>
       <p style="margin-top: -14px">Hier findest Informationen über die Gruppe {{ group.name }} und kannst diese verwalten.</p>

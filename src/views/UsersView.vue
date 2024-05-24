@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="home left-indent-view">
     <h1>Benutzerverwaltung
       <el-tooltip placement="bottom" content="Benutzer erstellen">
         <i @click="showCreateUserDialog=true" style="cursor: pointer" class="el-icon-circle-plus"></i>

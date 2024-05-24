@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="left-indent-view">
     <div v-if="loaded">
       <h1>Benutzerverwaltung » <i>{{ $route.params.username }}</i></h1>
       <p style="margin-top: -14px">Hier kannst du den Benutzer "{{ $route.params.username }}" verwalten.</p>

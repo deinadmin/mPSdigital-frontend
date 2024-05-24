@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="left-indent-view">
     <h1>Gruppen</h1>
     <p style="margin-top: -14px">Hier hast du eine Übersicht über die einzelnen Schülergruppen.</p>
     <el-table

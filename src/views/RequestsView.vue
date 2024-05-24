@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="left-indent-view">
     <h1>Anträge</h1>
     <p style="margin-top: -14px">Hier kannst du alle Anträge sehen, filtern, ordnen und genehmigen bzw. ablehnen.</p>
     <el-table

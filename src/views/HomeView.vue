@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="home left-indent-view">
     <h1>Home</h1>
   </div>
 </template>

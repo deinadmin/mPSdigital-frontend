@@ -70,7 +70,7 @@ body {
   margin: 0;
 }
 #app {
-  margin-left: 320px;
+  margin-left: 300px;
 }
 nav {
   position: fixed;
@@ -81,6 +81,9 @@ nav {
 }
 .menu-icon {
   margin-right: 10px;
+}
+.left-indent-view {
+  margin-left: 20px;
 }
 
 </style>

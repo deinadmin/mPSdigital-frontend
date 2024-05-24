@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="left-indent-view">
     <h1>Meine Gruppe</h1>
     <p style="margin-top: -14px">Hier hast du eine Übersicht über deine Gruppe.</p>
     <div style="display: flex">
