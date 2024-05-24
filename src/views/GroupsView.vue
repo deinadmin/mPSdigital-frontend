@@ -6,6 +6,7 @@
         :data="groups"
         stripe
         border
+        @row-click="goToGroup"
         style="width: 100%">
       <el-table-column
           prop="id"
@@ -50,6 +51,11 @@ export default {
   },
   props: {
     ip: String
+  },
+  methods: {
+    goToGroup(event) {
+      this.$router.push("/group/" + event.id)
+    },
   },
   async created() {
     try {
