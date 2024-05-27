@@ -101,22 +101,32 @@ export default {
       }
     },
     async updateRequest(data, status) {
-      if(data.status === (status ? "accepted" : "denied")) return this.$message.error("Dieser Antrag wurde bereits genehmigt!")
+      if(data.status === (status ? "accepted" : "denied")) return this.$message.error("Dieser Antrag wurde bereits " + (status ? "genehmigt" : "abgelehnt") + "!")
 
+      this.$confirm('Möchtest du den Antrag wirklich ' + (status ? "genehmigen" : "ablehnen") + '?', 'Warning', {
+        confirmButtonText: 'Ja, ' + (status ? "genehmigen" : "ablehnen") + '!',
+        cancelButtonText: 'Abbrechen',
+        type: 'warning'
+      }).then(async () => {
+        try {
+          const response = await axios.patch(this.ip + "excursion/" + data.id, {state: status ? "accepted" : "denied"}, {withCredentials: true});
 
-      try {
-        const response = await axios.patch(this.ip + "excursion/" + data.id, {state: status ? "accepted" : "denied"}, {withCredentials: true});
+          if (response.status !== 200) {
+            this.$message.error("Es ist ein Fehler aufgetreten.");
+          } else {
+            await this.loadRequests()
+            this.$message.success('Der Antrag der Gruppe "' + data.group.name + '" wurde ' + (status ? "genehmigt" : "abgelehnt") + '!');
+          }
 
-        if (response.status !== 200) {
+        } catch (e) {
           this.$message.error("Es ist ein Fehler aufgetreten.");
-        } else {
-          this.loadRequests()
-          this.$message.success('Der Antrag der Gruppe "' + data.group.name + '" wurde ' + (status ? "genehmigt" : "abgelehnt") + '!');
         }
+      }).catch(() => {
+        console.log("Abgebrochen")
+      });
 
-      } catch (e) {
-        this.$message.error("Es ist ein Fehler aufgetreten.");
-      }
+
+
 
 
 
