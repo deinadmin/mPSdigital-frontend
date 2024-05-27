@@ -3,7 +3,7 @@
     <h1>Anträge</h1>
     <p style="margin-top: -14px">Hier kannst du alle Anträge sehen, filtern, ordnen und genehmigen bzw. ablehnen.</p>
     <el-table
-        :data="tableData"
+        :data="requests"
         stripe
         border
         style="width: 100%">
@@ -13,21 +13,21 @@
           width="50">
       </el-table-column>
       <el-table-column
-          prop="title"
-          label="Titel">
+          prop="description"
+          label="Titel"
+          width="250"
+      >
       </el-table-column>
       <el-table-column
-          prop="group"
-          label="Gruppe"
-          width="300">
+          prop="group.name"
+          label="Gruppe">
       </el-table-column>
       <el-table-column
           label="Datum"
           sortable
           width="150">
         <template slot-scope="scope">
-          <i class="el-icon-time"></i>
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          {{ formatDate(scope.row.date) }}
         </template>
       </el-table-column>
       <el-table-column
@@ -43,19 +43,19 @@
           width="300">
         <template slot-scope="scope">
           <el-button
-              @click.native.prevent="goToPin(scope.$index, tableData)"
+              @click.native.prevent="goToPin(scope.$index, requests)"
               type="text"
               size="small">
             📌 Zur Pinnwand
           </el-button>
           <el-button
-              @click.native.prevent="approveRequest(scope.row)"
+              @click.native.prevent="updateRequest(scope.row, true)"
               type="text"
               size="small">
             ✅ Genehmigen
           </el-button>
           <el-button
-              @click.native.prevent="$emit('logOut')"
+              @click.native.prevent="updateRequest(scope.row, false)"
               type="text"
               size="small">
             ❌ Ablehnen
@@ -67,127 +67,19 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: 'RequestsView',
-  created() {
+  props: {
+    ip: String
+  },
+  async created() {
+    await this.loadRequests()
   },
   data() {
     return {
-      tableData: [{
-        status: 'ABGELEHNT',
-        group: 'Baumhaus bauen mit echtem Holz',
-        title: 'Bäume fällen im Schwarzwald ohne Genehmigung',
-        date: "2024-01-03",
-        id: 0
-      }, {
-        status: 'ABGELEHNT',
-        group: 'Petersburg entdecken',
-        title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-01-03",
-        id: 1
-      }, {
-        status: 'GENEHMIGT',
-        group: 'Petersburg entdecken',
-        title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-01-03",
-        id: 2
-      }, {
-        status: 'GENEHMIGT',
-        group: 'Petersburg entdecken',
-        title: 'No. 189, Grove St, Los Angeles',
-        date: "2023-01-03",
-        id: 3
-      }, {
-        status: 'AUSSTEHEND',
-        group: 'Petersburg entdecken',
-        title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-01-03",
-        id: 4
-      }, {
-        status: 'AUSSTEHEND',
-        group: 'Petersburg entdecken',
-        title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-04-03",
-        id: 5
-      }, {
-        status: 'GENEHMIGT',
-        group: 'Hotdogs selber herstellen',
-        title: 'Ausflug zur Würstchenfabrik in Würzburg',
-        date: "2024-02-03",
-        id: 6
-      }, {
-        status: 'ABGELEHNT',
-        group: 'Petersburg entdecken',
-        title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-05-03",
-        id: 1
-      }, {
-        status: 'GENEHMIGT',
-        group: 'Petersburg entdecken',
-        title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-01-07",
-        id: 2
-      }, {
-        status: 'GENEHMIGT',
-        group: 'Petersburg entdecken',
-        title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-01-01",
-        id: 3
-      }, {
-        status: 'AUSSTEHEND',
-        group: 'Petersburg entdecken',
-        title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-01-03",
-        id: 4
-      }, {
-        status: 'ABGELEHNT',
-        group: 'Petersburg entdecken',
-        title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-01-28",
-        id: 1
-      }, {
-        status: 'GENEHMIGT',
-        group: 'Petersburg entdecken',
-        title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-01-03",
-        id: 2
-      }, {
-        status: 'GENEHMIGT',
-        group: 'Petersburg entdecken',
-        title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-01-03",
-        id: 3
-      }, {
-        status: 'AUSSTEHEND',
-        group: 'Petersburg entdecken',
-        title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-01-03",
-        id: 4
-      }, {
-        status: 'ABGELEHNT',
-        group: 'Petersburg entdecken',
-        title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-01-03",
-        id: 1
-      }, {
-        status: 'GENEHMIGT',
-        group: 'Petersburg entdecken',
-        title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-01-03",
-        id: 2
-      }, {
-        status: 'GENEHMIGT',
-        group: 'Petersburg entdecken',
-        title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-01-03",
-        id: 3
-      }, {
-        status: 'AUSSTEHEND',
-        group: 'Petersburg entdecken',
-        title: 'No. 189, Grove St, Los Angeles',
-        date: "2024-01-03",
-        id: 4
-      }]
+      requests: [],
     }
   },
   methods: {
@@ -195,10 +87,64 @@ export default {
       const property = column['property'];
       return row[property] === value;
     },
-    approveRequest(data) {
-      if(data.status === "GENEHMIGT") return this.$message.error("Dieser Antrag wurde bereits genehmigt!")
-      this.$message.success('Der Antrag der Gruppe "' + data.group + '" wurde genehmigt!')
-    }
+    async loadRequests() {
+      try {
+        const response = await axios.get(this.ip + "excursions/", {withCredentials: true});
+        console.log(response)
+        if (response.status === 200) {
+
+          this.requests = response.data
+        }
+
+      } catch {
+        this.$message.error("An error occured.");
+      }
+    },
+    async updateRequest(data, status) {
+      if(data.status === (status ? "accepted" : "denied")) return this.$message.error("Dieser Antrag wurde bereits genehmigt!")
+
+
+      try {
+        const response = await axios.patch(this.ip + "excursion/" + data.id, {state: status ? "accepted" : "denied"}, {withCredentials: true});
+
+        if (response.status !== 200) {
+          this.$message.error("Es ist ein Fehler aufgetreten.");
+        } else {
+          this.loadRequests()
+          this.$message.success('Der Antrag der Gruppe "' + data.group.name + '" wurde ' + (status ? "genehmigt" : "abgelehnt") + '!');
+        }
+
+      } catch (e) {
+        this.$message.error("Es ist ein Fehler aufgetreten.");
+      }
+
+
+
+    },
+    async goToPin(index, data) {
+      this.$notify({
+        title: "Bitte warten...",
+        message: 'Die Pinnwand wird geöffnet!',
+        type: 'info',
+        duration: 3000,
+        showClose: false
+      });
+
+      let groupId = data[index].group.id
+
+
+      const response = await axios.get(this.ip + "group/" + groupId, {withCredentials: true});
+
+      if (response.status === 200) {
+
+        console.log(response.data)
+        window.open(response.data.pinboard, '_blank')
+      }
+    },
+    formatDate(date) {
+      return new Date(date).toLocaleDateString('de-DE', { year: 'numeric', month: 'long', day: 'numeric' })
+    },
+
   }
 }
 </script>

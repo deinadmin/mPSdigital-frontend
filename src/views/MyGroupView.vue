@@ -20,7 +20,7 @@
         <div slot="header" class="clearfix">
           <span><b>Mitglieder</b></span>
         </div>
-        <div>
+        <div style="margin-top: -16px">
           <p v-bind:key="member" v-for="member in group.members"><i style="margin-right: 5px" class="fa-solid fa-user"></i> <b>{{ member }}</b></p>
         </div>
       </el-card>
