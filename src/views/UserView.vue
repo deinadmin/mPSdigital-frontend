@@ -9,11 +9,23 @@
           <el-button style="float: right; padding: 3px 0" type="text">Operation button</el-button>
         </div>
         <p><b>Benutzername:</b></p>
-        <el-input style="user-select: none;" disabled v-model="$route.params.username"></el-input>
+        <el-input style="user-select: none;" readonly v-model="$route.params.username"></el-input>
         <p><b>Passwort:</b></p>
-        <el-input disabled value="************">
+        <el-input readonly value="************">
           <el-button :loading="passwordResetLoading" type="primary" @click="resetPassword" slot="append">Passwort zurücksetzen</el-button>
         </el-input>
+        <div v-if="user.role === 'student'">
+          <p><b>Klasse:</b></p>
+          <el-autocomplete
+              :disabled="loadedClasses===false"
+              v-model="classSearch"
+              style="width: 100%; margin-bottom: 10px"
+              value-key="name"
+              :fetch-suggestions="querySearchForGroup"
+              placeholder="Noch in keiner Klasse"
+              @select="handleSelectClass"
+          ></el-autocomplete>
+        </div>
       </el-card>
 
     </div>
@@ -32,13 +44,19 @@ export default {
     return {
       passwordResetLoading: false,
       loaded: false,
-      user: null
+      user: null,
+      loadedClasses: false,
+      classSearch: "",
+      classes: [],
+      selectedClass: "",
     }
   },
   props: {
     ip: String
   },
   async created() {
+    await this.loadClasses()
+
     try {
       const response = await axios.get(this.ip + "user/" + this.$route.params.username, {withCredentials: true})
 
@@ -67,6 +85,36 @@ export default {
     }
   },
   methods: {
+    async handleSelectClass(item) {
+      this.selectedClass = item
+
+      try {
+
+        const response = await axios.put(this.ip + "form/" + item.name + "/" + this.$route.params.username, {  }, {withCredentials: true})
+
+        if(response.status === 200) {
+          this.$notify({
+            title: "Alles in Ordnung!",
+            message: 'Der Benutzer wurde der Klasse "' + item.name + '" hinzugefügt.',
+            type: 'success',
+          });
+        } else {
+          this.$notify({
+            title: "Ups!",
+            message: 'Da ist wohl etwas schief gelaufen.',
+            type: 'error',
+          });
+        }
+
+      } catch {
+        this.$notify({
+          title: "Ups!",
+          message: 'Da ist wohl etwas schief gelaufen.',
+          type: 'error',
+        });
+      }
+
+    },
     async resetPassword() {
       this.passwordResetLoading = true;
       try {
@@ -110,7 +158,40 @@ export default {
 
       }
 
-    }
+    },
+    async loadClasses() {
+      try {
+        const response = await axios.get(this.ip + "forms/", {withCredentials: true});
+
+        if (response.status === 200) {
+
+          this.classes = response.data
+          this.loadedClasses = true
+        }
+
+      } catch {
+        this.$message.error("An error occured.");
+      }
+    },
+    querySearchForGroup(queryString, cb) {
+      if(this.loadedClasses) {
+        var classes = this.classes;
+        console.log("Classes: " + classes[0].name)
+        if(classes[0] === null) return;
+        var results = queryString ? classes.filter(this.createFilter(queryString)) : classes;
+        // call callback function to return suggestions
+        console.log("Results:")
+        console.log(results)
+        cb(results);
+      } else {
+        cb({ name: "Die Gruppen konnten nicht geladen werden." })
+      }
+    },
+    createFilter(queryString) {
+      return (classs) => {
+        return (classs.name.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+      };
+    },
   },
 }
 </script>

@@ -9,7 +9,7 @@
           <i class="menu-icon fa-solid fa-user"></i>
           <span>{{ user.username }}</span>
         </el-menu-item>
-        <hr style="margin: 0; padding: 0;">
+        <hr style="margin: 0; padding: 0; opacity: .2">
         <el-menu-item route="/" index="home">
           <i class="menu-icon fa-solid fa-house"></i>
           <span>Home</span>
@@ -21,6 +21,10 @@
         <el-menu-item v-if="user.role === 'teacher' || user.role === 'admin'" route="/groups" index="groups">
           <i class="menu-icon fa-solid fa-people-group"></i>
           <span>Gruppen</span>
+        </el-menu-item>
+        <el-menu-item v-if="user.role === 'teacher' || user.role === 'admin'" route="/classes" index="classes">
+          <i class="menu-icon fa-duotone fa-screen-users"></i>
+          <span>Klassen</span>
         </el-menu-item>
         <el-menu-item v-else route="/my-group" index="my-group">
           <i class="menu-icon fa-solid fa-people-group"></i>

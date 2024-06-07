@@ -60,6 +60,11 @@ const routes = [
     path: '/my-requests',
     name: 'my-requests',
     component: () => import('../views/MyRequestsView.vue')
+  },
+  {
+    path: '/classes',
+    name: 'classes',
+    component: () => import('../views/ClassesView.vue')
   }
 ]
 

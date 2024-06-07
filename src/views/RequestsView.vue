@@ -33,7 +33,7 @@
       <el-table-column
           prop="status"
           label="Status"
-          :filters="[{text: 'ABGELEHNT', value: 'ABGELEHNT'}, {text: 'GENEHMIGT', value: 'GENEHMIGT'}, {text: 'AUSSTEHEND', value: 'AUSSTEHEND'}]"
+          :filters="[{text: 'ABGELEHNT', value: 'denied'}, {text: 'GENEHMIGT', value: 'accepted'}, {text: 'AUSSTEHEND', value: 'pending'}]"
           :filter-method="filterHandler"
           width="150">
       </el-table-column>
@@ -103,10 +103,10 @@ export default {
     async updateRequest(data, status) {
       if(data.status === (status ? "accepted" : "denied")) return this.$message.error("Dieser Antrag wurde bereits " + (status ? "genehmigt" : "abgelehnt") + "!")
 
-      this.$confirm('Möchtest du den Antrag wirklich ' + (status ? "genehmigen" : "ablehnen") + '?', 'Warning', {
+      this.$confirm('Möchtest du den Antrag wirklich ' + (status ? "genehmigen" : "ablehnen") + '?', 'Bitte bestätigen', {
         confirmButtonText: 'Ja, ' + (status ? "genehmigen" : "ablehnen") + '!',
         cancelButtonText: 'Abbrechen',
-        type: 'warning'
+        type: 'info'
       }).then(async () => {
         try {
           const response = await axios.patch(this.ip + "excursion/" + data.id, {state: status ? "accepted" : "denied"}, {withCredentials: true});
