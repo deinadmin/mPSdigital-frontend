@@ -17,7 +17,7 @@
         <div v-if="user.role === 'student'">
           <p><b>Klasse:</b></p>
           <el-autocomplete
-              :disabled="loadedClasses===false"
+              :disabled="loadedClasses===false || alreadyClass"
               v-model="classSearch"
               style="width: 100%; margin-bottom: 10px"
               value-key="name"
@@ -49,6 +49,7 @@ export default {
       classSearch: "",
       classes: [],
       selectedClass: "",
+      alreadyClass: true
     }
   },
   props: {
@@ -62,7 +63,12 @@ export default {
 
       this.user = response.data
       this.loaded = true
-
+      if(this.user.form !== null) {
+        this.alreadyClass = true
+        this.classSearch = this.user.form.name
+      } else {
+        this.alreadyClass = false
+      }
 
       // TODO: Finish user view after Ben fixed "user" endpoint
 
@@ -98,6 +104,7 @@ export default {
             message: 'Der Benutzer wurde der Klasse "' + item.name + '" hinzugefügt.',
             type: 'success',
           });
+          this.alreadyClass = true
         } else {
           this.$notify({
             title: "Ups!",
