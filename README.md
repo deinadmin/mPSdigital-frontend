@@ -1,4 +1,5 @@
 # mpsdigital-frontend
+### Frontend für mPSdigital - das Verwaltungssystem für Lehrkräfte und Schüler im Projektunterricht!
 
 ## Project setup
 ```
@@ -14,11 +15,3 @@ yarn serve
 ```
 yarn build
 ```
-
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
