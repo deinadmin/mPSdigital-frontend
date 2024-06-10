@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <div>
-      <h1>Login » mPSdigital v0.1</h1>
+      <h1>Login » mPSdigital</h1>
       <el-card shadow="always" style="text-align: left">
         <p style="margin-top: 0">Email-Adresse:</p>
         <el-input size="medium" prefix-icon="el-icon-user-solid" placeholder="name.nachname" v-model="email"><template slot="append">@mps-ki.de</template></el-input>
@@ -9,8 +9,8 @@
         <el-input show-password size="medium" type="password" prefix-icon="el-icon-lock" placeholder="●●●●●●●●●●" v-model="password"></el-input>
         <br>
         <el-button :loading="loading" @click="logIn" type="primary" style="width: 100%; margin-top: 15px" size="small">Login</el-button>
+        <p style="text-align: center; margin-bottom: 0">Du brauchst Hilfe? <el-button plain style="margin-left: 5px" size="mini" type="primary" @click="openLeitfaden">Klick hier!</el-button></p>
       </el-card>
-      <p>made with ❤️ by Q2-Informatikprofil</p>
     </div>
   </div>
 </template>
@@ -40,6 +40,9 @@ export default {
     })
   },
   methods: {
+    openLeitfaden() {
+      window.open('https://click.craft.me/mpsdigital/leitfaden','_blank');
+    },
     logIn() {
       if(this.email === '' || this.password === '') {
         return this.$message.error("Bitte achte darauf, dass jedes Feld ausgefüllt ist!")
