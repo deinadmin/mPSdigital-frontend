@@ -11,7 +11,7 @@
         <el-input clearable v-model="filter_class" placeholder="8b">
           <el-button :disabled="false" @click="filterGroups" type="success" slot="append">Filtern</el-button>
         </el-input>
-        <el-button slot="reference" type="primary" icon="fa-sharp fa-solid fa-filter"> Nach Klasse filtern</el-button>
+        <el-button slot="reference" type="primary" icon="fa-sharp fa-solid fa-filter">{{ filtered ? ' Gefiltert nach Klasse "' + filter_class + '"' : ' Nach Klasse filtern'}}</el-button>
       </el-popover>
 
 
@@ -66,7 +66,8 @@ export default {
   data() {
     return {
       groups: [],
-      filter_class: ""
+      filter_class: "",
+      filtered: false
     }
   },
   props: {
@@ -89,6 +90,7 @@ export default {
         if (response.status === 200) {
 
           this.groups = response.data.groups
+          this.filtered = true
         }
 
       } catch {
@@ -98,18 +100,27 @@ export default {
     }
   },
   async created() {
-    try {
-      const response = await axios.get(this.ip + "groups/", {withCredentials: true});
+    const urlParams = new URLSearchParams(window.location.search);
 
-      if (response.status === 200) {
+    if(urlParams.has("filter")) {
+      this.filter_class = urlParams.get("filter")
+      this.filterGroups()
+    } else {
+      try {
+        const response = await axios.get(this.ip + "groups/", {withCredentials: true});
 
-        this.groups = response.data.groups
-        console.log(response.data.groups)
-      }
+        if (response.status === 200) {
 
-    } catch {
+          this.groups = response.data.groups
+          console.log(response.data.groups)
+        }
+
+      } catch {
         this.$message.error("An error occured.");
+      }
     }
+
+
   }
 }
 </script>
