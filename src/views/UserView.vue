@@ -168,7 +168,7 @@ export default {
     },
     async loadClasses() {
       try {
-        const response = await axios.get(this.ip + "forms/", {withCredentials: true});
+        const response = await axios.get(this.ip + "form/", {withCredentials: true});
 
         if (response.status === 200) {
 

@@ -89,7 +89,7 @@ export default {
     },
     async loadRequests() {
       try {
-        const response = await axios.get(this.ip + "excursions/", {withCredentials: true});
+        const response = await axios.get(this.ip + "excursion/", {withCredentials: true});
         console.log(response)
         if (response.status === 200) {
 

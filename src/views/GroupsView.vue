@@ -107,7 +107,7 @@ export default {
       this.filterGroups()
     } else {
       try {
-        const response = await axios.get(this.ip + "groups/", {withCredentials: true});
+        const response = await axios.get(this.ip + "group/", {withCredentials: true});
 
         if (response.status === 200) {
 

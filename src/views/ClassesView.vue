@@ -43,7 +43,7 @@ export default {
         console.log(value);
         axios.post(this.ip + "form", {name: value}, {withCredentials: true}).then(() => {
           this.$message.success("Klasse erfolgreich erstellt.")
-
+          this.fetchForms()
         }).catch(() => {
           this.$message.error("Fehler beim Erstellen der Klasse.")
         });
@@ -57,19 +57,22 @@ export default {
     formatDate(date) {
       return new Date(date).toLocaleDateString('de-DE', {year: 'numeric', month: 'long', day: 'numeric'})
     },
+    async fetchForms() {
+      try {
+        const response = await axios.get(this.ip + "form/", {withCredentials: true});
+
+        if (response.status === 200) {
+
+          this.forms = response.data
+        }
+
+      } catch {
+        this.$message.error("An error occured.");
+      }
+    }
   },
   async created() {
-    try {
-      const response = await axios.get(this.ip + "forms/", {withCredentials: true});
-
-      if (response.status === 200) {
-
-        this.forms = response.data
-      }
-
-    } catch {
-      this.$message.error("An error occured.");
-    }
+    await this.fetchForms()
   }
 }
 </script>

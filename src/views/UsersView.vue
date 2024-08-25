@@ -22,25 +22,30 @@
           sortable
           label="Rolle">
       </el-table-column>
-      <el-table-column
-          prop="status"
-          label="Status"
-          sortable
-          width="150">
-      </el-table-column>
     </el-table>
     <el-dialog width="30%" title="Einen Benutzer erstellen" :visible.sync="showCreateUserDialog">
       <el-form :model="createUserForm">
         <el-form-item label="Benutzername:">
           <el-input v-model="createUserForm.username" placeholder="vorname.nachname" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="Rolle:">
-          <el-select v-model="createUserForm.role" placeholder="Rolle des Benutzers">
-            <el-option label="Schüler" value="student"></el-option>
-            <el-option label="Lehrer" value="teacher"></el-option>
-            <el-option label="Admin" value="admin"></el-option>
-          </el-select>
-        </el-form-item>
+        <div style="display: flex">
+          <el-form-item label="Rolle:" style="margin-right: 5px">
+            <el-select v-model="createUserForm.role" placeholder="Rolle des Benutzers">
+              <el-option label="Schüler" value="student"></el-option>
+              <el-option label="Lehrer" value="teacher"></el-option>
+              <el-option label="Admin" value="admin"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="Klasse:" v-if="createUserForm.role === 'student'">
+            <el-autocomplete
+                :disabled="loadedClasses===false"
+                value-key="name"
+                :fetch-suggestions="querySearchForGroup"
+                placeholder="Klasse"
+                @select="handleSelectClass"
+            ></el-autocomplete>
+          </el-form-item>
+        </div>
         <el-alert :closable="false" type="info">Der Account wird mit einem Einmal-Passwort versehen, welches äquivalent zu dem Benutzernamen ist.</el-alert>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -67,28 +72,68 @@ export default {
         role: ""
       },
       loading: false,
-      users: []
+      users: [],
+      classes: [],
+      loadedClasses: false,
+      selectedClass: "",
     }
   },
   async created() {
     await this.loadUsers()
+    await this.loadClasses()
   },
   props: {
     ip: String
   },
   methods: {
+    handleSelectClass(item) {
+      this.selectedClass = item
+    },
+    async loadClasses() {
+      try {
+        const response = await axios.get(this.ip + "form/", {withCredentials: true});
+
+        if (response.status === 200) {
+
+          this.classes = response.data
+          this.loadedClasses = true
+        }
+
+      } catch {
+        this.$message.error("An error occured.");
+      }
+    },
+    querySearchForGroup(queryString, cb) {
+      if(this.loadedClasses) {
+        var classes = this.classes;
+        console.log("Classes: " + classes[0].name)
+        if(classes[0] === null) return;
+        var results = queryString ? classes.filter(this.createFilter(queryString)) : classes;
+        // call callback function to return suggestions
+        console.log("Results:")
+        console.log(results)
+        cb(results);
+      } else {
+        cb({ name: "Die Gruppen konnten nicht geladen werden." })
+      }
+    },
+    createFilter(queryString) {
+      return (classs) => {
+        return (classs.name.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+      };
+    },
     goToUser(event) {
       this.$router.push("/users/" + event.username)
     },
     async loadUsers() {
       try {
 
-        const response = await axios.get("http://localhost:3001/users/", {withCredentials: true});
+        const response = await axios.get(this.ip + "user/", {withCredentials: true});
 
         if (response.status === 200) {
 
           console.log(response.data)
-          this.users = response.data.users
+          this.users = response.data
         }
 
       } catch (error) {
@@ -102,16 +147,20 @@ export default {
     async createUser() {
       this.loading = true
 
-      if(this.createUserForm.username === "" || this.createUserForm.role === "") {
+      if(this.createUserForm.username === "" || this.createUserForm.role === "" || (this.createUserForm.role === "student" && this.selectedClass === "")) {
         this.$message.error("Alle Felder müssen ausgefüllt sein!")
         this.loading = false
         return
       }
       console.log(this.createUserForm)
       try {
-        const response = await axios.post(this.ip + 'user/' + this.createUserForm.username, {
+        const response = await axios.post(this.ip + 'user/' + this.createUserForm.username,this.createUserForm.role === 'student' ? {
+          role: this.createUserForm.role,
+          form: this.selectedClass.id
+        } : {
           role: this.createUserForm.role
         }, {withCredentials: true});
+
         console.log(response)
         if (response.status === 201) {
           this.$notify({

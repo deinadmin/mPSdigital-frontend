@@ -5,7 +5,7 @@
           router
           style="height: 100%; position: relative"
           :default-active="this.$router.currentRoute.name">
-        <el-menu-item index="account">
+        <el-menu-item>
           <i class="menu-icon fa-solid fa-user"></i>
           <span>{{ user.username }}</span>
         </el-menu-item>
@@ -105,7 +105,7 @@ export default {
     return {
       loaded: false,
       loggedIn: false,
-      ip: "http://localhost:3001/",
+      ip: "http://localhost:3001/api/",
       user: {
         username: "",
         role: "",
