@@ -42,7 +42,9 @@
                 value-key="name"
                 :fetch-suggestions="querySearchForGroup"
                 placeholder="Klasse"
+                v-model="classValue"
                 @select="handleSelectClass"
+                @change="selectedClass = ''"
             ></el-autocomplete>
           </el-form-item>
         </div>
@@ -76,6 +78,7 @@ export default {
       classes: [],
       loadedClasses: false,
       selectedClass: "",
+      classValue: ""
     }
   },
   async created() {
